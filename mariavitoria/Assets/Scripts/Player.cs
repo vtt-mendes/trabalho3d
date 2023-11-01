@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     public float speed;
     public float gravity;
 
-    private animator anim;
+    private Animator anim;
 
     private Transform cam;
 
@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<animator>();
+        anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
         cam = Camera.main.transform;
     }
