@@ -18,6 +18,9 @@ public class Player : MonoBehaviour
     public float smoothRotTime;
     private float turnSmoothVelocity;
 
+    public float colliderRadius;
+    public List<Transform> EnemyList = new List<Transform>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +33,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         Move();
+        GetMouseInput();
     }
     void Move()
     {
@@ -48,10 +52,14 @@ public class Player : MonoBehaviour
              transform.rotation = Quaternion.Euler(0f, smoothAngle, 0f);
 
              moveDirection = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * speed;
+
+             anim.SetInteger("transition", 1);
+    
              
         } 
         else 
         { 
+            //anim.SetInteger("transition", 0);
              moveDirection = Vector3.zero;
         }
        }
@@ -60,6 +68,52 @@ public class Player : MonoBehaviour
 
       controller.Move(moveDirection * Time.deltaTime);
 
+    }
+
+    void GetMouseInput()
+    {
+       if(controller.isGrounded)
+       {
+        if(Input.GetMouseButtonDown(0))
+        {
+            StartCoroutine("Attack");
+        }
+       }
+    }
+
+    IEnumerator Attack()
+    {
+        anim.SetInteger("transition", 2);
+
+        yield return new WaitForSeconds(1f);
+
+        GetEnemiesList();
+
+        foreach(Transform e in EnemyList)
+        {
+            Debug.Log(e.name);
+        }
+
+        yield return new WaitForSeconds(1f);
+
+       anim.SetInteger("transition", 0);
+    }
+
+    void GetEnemiesList()
+    {
+        foreach(Collider c in Physics.OverlapSphere((transform.position + transform.forward * colliderRadius), colliderRadius))
+        {
+          if(c.gameObject.CompareTag("Enemy"));
+          {
+             EnemyList.Add(c.transform);
+          }
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+       Gizmos.color = Color.red;
+      Gizmos.DrawWireSphere(transform.position + transform.forward, colliderRadius);
     }
 }
 
